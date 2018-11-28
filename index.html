@@ -1,0 +1,111 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>tracking.js - face with camera</title>
+  <link rel="stylesheet" href="assets/demo.css">
+
+  <script src="js/tracking-min.js"></script>
+  <script src="js/data/face-min.js"></script>
+  <script src="assets/stats.min.js"></script>
+
+  <style>
+  video, canvas {
+    margin-left: 230px;
+    margin-top: 120px;
+    position: absolute;
+  }
+  </style>
+</head>
+<body>
+  <div class="demo-title">
+    <p>Shy Baby</p>
+  </div>
+
+  <div><button id="button" style="position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    width: 100px;
+    height: 40px;
+    border-radius: 10px;
+    font-size: 16px;
+    border: none;
+    background: black;
+    color: white;
+    cursor: pointer;
+    z-index: 2;" onclick="start();">Start</button> </div>
+
+  <div class="demo-frame">
+    <div class="demo-container">
+      <video id="video" width="320" height="240" preload autoplay loop muted></video>
+    </div>
+  </div>
+
+  <script>
+    function start() {
+
+        var button = document.getElementById('button');
+        button.style.display = "none";
+
+        var isFaceDetected = false;
+
+        var tracker = new tracking.ObjectTracker('face');
+        tracker.setInitialScale(4);
+        tracker.setStepSize(2);
+        tracker.setEdgesDensity(0.1);
+
+        tracking.track('#video', tracker, { camera: true });
+
+        tracker.on('track', function(event) {
+
+            if(event.data.length ==0)
+            {
+                // No Face Detected
+                if(isFaceDetected) {
+                    isFaceDetected=false;
+                    cry();
+                }
+            }
+            else
+            {
+                // Face Detected
+                if(!isFaceDetected) {
+                    isFaceDetected = true;
+                    laugh();
+                }
+            }
+        });
+    }
+
+    var snd;
+
+    function cry() {
+
+        if(snd)
+        {
+            snd.pause();
+        }
+
+        snd = new Audio('cry.mp3');
+        snd.loop = true;
+        snd.play();
+
+    }
+
+    function laugh() {
+
+        if(snd)
+        {
+            snd.pause();
+        }
+
+        snd = new Audio('laugh.mp3');
+        snd.loop = true;
+        snd.play();
+    }
+
+  </script>
+
+</body>
+</html>
